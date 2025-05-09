@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35818.85
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorAPI", "NewsAggregatorAPI\NewsAggregatorAPI.csproj", "{4C9E04E6-EE06-43D6-BABF-512C67ED10CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorData", "NewsAggregatorData\NewsAggregatorData.csproj", "{874BBCC2-254F-4C72-95D0-4EF0E74F8714}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorMapping", "NewsAggregatorMapping\NewsAggregatorMapping.csproj", "{C6BE895B-42BA-4A69-BA54-CC546537E9D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorModels", "NewsAggregatorModels\NewsAggregatorModels.csproj", "{810CDF2E-2B54-43B3-A9A9-B965D19D621A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorServices", "NewsAggregatorServices\NewsAggregatorServices.csproj", "{BEEE6445-2BB1-4F61-8632-C01518189E05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorCQS", "NewsAggregatorCQS\NewsAggregatorCQS.csproj", "{2322EEE6-CC98-4E80-9213-9AF5DC0F943B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorCore", "NewsAggregatorCore\NewsAggregatorCore.csproj", "{817438B3-95E2-4100-948B-9FB359472318}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4C9E04E6-EE06-43D6-BABF-512C67ED10CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C9E04E6-EE06-43D6-BABF-512C67ED10CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C9E04E6-EE06-43D6-BABF-512C67ED10CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C9E04E6-EE06-43D6-BABF-512C67ED10CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{874BBCC2-254F-4C72-95D0-4EF0E74F8714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874BBCC2-254F-4C72-95D0-4EF0E74F8714}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874BBCC2-254F-4C72-95D0-4EF0E74F8714}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874BBCC2-254F-4C72-95D0-4EF0E74F8714}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6BE895B-42BA-4A69-BA54-CC546537E9D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6BE895B-42BA-4A69-BA54-CC546537E9D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6BE895B-42BA-4A69-BA54-CC546537E9D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6BE895B-42BA-4A69-BA54-CC546537E9D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{810CDF2E-2B54-43B3-A9A9-B965D19D621A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{810CDF2E-2B54-43B3-A9A9-B965D19D621A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{810CDF2E-2B54-43B3-A9A9-B965D19D621A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{810CDF2E-2B54-43B3-A9A9-B965D19D621A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEEE6445-2BB1-4F61-8632-C01518189E05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEEE6445-2BB1-4F61-8632-C01518189E05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEEE6445-2BB1-4F61-8632-C01518189E05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEEE6445-2BB1-4F61-8632-C01518189E05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2322EEE6-CC98-4E80-9213-9AF5DC0F943B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2322EEE6-CC98-4E80-9213-9AF5DC0F943B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2322EEE6-CC98-4E80-9213-9AF5DC0F943B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2322EEE6-CC98-4E80-9213-9AF5DC0F943B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{817438B3-95E2-4100-948B-9FB359472318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{817438B3-95E2-4100-948B-9FB359472318}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{817438B3-95E2-4100-948B-9FB359472318}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{817438B3-95E2-4100-948B-9FB359472318}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4402D64C-10E8-4AE0-9940-59DE9BF0B958}
+	EndGlobalSection
+EndGlobal
