@@ -50,16 +50,14 @@ namespace NewsAggregatorAPI.Controllers
 
         [HttpGet("get-comment-reaction-by-user-id")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserCommentReactionDTO))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCommentReactionByUserId(Guid commentId, Guid userId)
         {
             try
             {
                 var commentReaction = await _commentReactionServices.GetCommentReactionAsync(commentId, userId);
-                if(commentReaction is null)
-                    return NotFound();
                 return Ok(commentReaction);
             }
             catch (Exception)
