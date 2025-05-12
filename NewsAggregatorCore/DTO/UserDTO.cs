@@ -6,6 +6,7 @@
         public string PasswordHash { get; set; }
         public string Login { get; set; }
         public string Email { get; set; }
+        public double NewsMinRate { get; set; }
         public int RoleId { get; set; }
         public RoleDTO? Role { get; set; }
     }
