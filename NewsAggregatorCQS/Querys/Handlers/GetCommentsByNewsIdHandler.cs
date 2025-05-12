@@ -21,8 +21,13 @@ namespace NewsAggregatorCQS.Querys.Handlers
         {
             var comments = await _dbContext.Comments
                 .AsNoTracking()
+                .Include(c => c.News)
                 .Include(c => c.User)
-                .ThenInclude(u => u.Role)
+                    .ThenInclude(u => u.Role)
+                .Include(c => c.UserCommentReactions)
+                    .ThenInclude(u => u.User)
+                .Include(c => c.UserCommentReactions)
+                    .ThenInclude(u => u.Reaction)
                 .Where(c => c.NewsId.Equals(request.NewsId))
                 .ToArrayAsync(cancellationToken);
             if (comments is null || !comments.Any())
