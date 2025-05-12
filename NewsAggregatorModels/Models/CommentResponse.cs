@@ -1,4 +1,6 @@
-﻿namespace NewsAggregatorModels.Models
+﻿using NewsAggregatorCore.DTO;
+
+namespace NewsAggregatorModels.Models
 {
     public class CommentResponse
     {
@@ -8,5 +10,6 @@
         public Guid UserId { get; init; }
         public string UserLogin { get; set; }
         public string UserRoleName { get; set; }
+        public List<UserCommentReactionDTO> UserCommentReactions { get; set; } = new();
     }
 }
