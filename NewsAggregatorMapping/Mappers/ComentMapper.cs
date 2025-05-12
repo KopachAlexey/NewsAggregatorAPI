@@ -17,11 +17,10 @@ namespace NewsAggregatorMapping.Mappers
 
         public partial CommentDTO AddCommentRequestTOCommentDTO(AddCommentRequest newComment);
 
-        
         public CommentResponse CommentDTOToCommentResponse(CommentDTO commentDTO)
         {
             var commentResponse = MapCommentDTOToCommentResponse(commentDTO);
-            commentResponse.UserRoleName = commentDTO.User?.Role?.RoleName ?? "";
+            commentResponse.UserRoleName = commentDTO.User?.Role?.RoleName ?? String.Empty;
             return commentResponse;
         }
 
