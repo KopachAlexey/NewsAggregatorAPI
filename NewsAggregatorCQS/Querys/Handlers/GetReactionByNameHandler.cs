@@ -19,7 +19,7 @@ namespace NewsAggregatorCQS.Querys.Handlers
 
         public async Task<ReactionDTO?> Handle(GetReactionByNameQuery request, CancellationToken cancellationToken)
         {
-            var reaction = await _dbContext.Reactions.SingleOrDefaultAsync(r => r.ReactionName == request.ReactionName);
+            var reaction = await _dbContext.Reactions.SingleOrDefaultAsync(r => r.Name == request.ReactionName);
             if (reaction is null)
                 return null;
             return _reactionMapper.EntityToDto(reaction);
