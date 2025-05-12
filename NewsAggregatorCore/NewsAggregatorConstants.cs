@@ -23,6 +23,7 @@
         public const string DelExpiredTokensKey = "DelExpiredTokens";
 
         public const string UserRole = "User";
+        public const string DeveloperRole = "Developer";
 
         public const string LikeReactionKey = "Like";
         public const string DislikeReactionKey = "Dislike";
