@@ -21,13 +21,21 @@ namespace NewsAggregatorServices.Implementations
 
         public async Task AggregateNewsFromSourceAsync(SourceDTO source)
         {
-            var scrapper = _sourceScrapperFactory.GetScrapper(source.Name);
-            if (scrapper is null)
-                throw new ArgumentException("There is no scraper for this source");
-            var news = await _rssNewsReader.ReadAsync(source);
-            var uniqueNews = await _mediator.Send(new FilterUniqueNewsQuery { NewsDTOs = news });
-            var newNews = await scrapper.ScrapingNewsAsync(uniqueNews);
-            await _mediator.Send(new AddNewsCommands { NewsDTOs = newNews });
+            try
+            {
+                var scrapper = _sourceScrapperFactory.GetScrapper(source.Name);
+                if (scrapper is null)
+                    throw new ArgumentException("There is no scraper for this source");
+                var news = await _rssNewsReader.ReadAsync(source);
+                var uniqueNews = await _mediator.Send(new FilterUniqueNewsQuery { NewsDTOs = news });
+                var newNews = await scrapper.ScrapingNewsAsync(uniqueNews);
+                await _mediator.Send(new AddNewsCommands { NewsDTOs = newNews });
+            }
+            catch (Exception)
+            {
+                
+            }
+            
         }
     }
 }
