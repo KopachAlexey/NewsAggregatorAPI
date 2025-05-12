@@ -38,7 +38,7 @@ namespace NewsAggregatorAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddUser([FromForm] AddUserRequest newUser)
+        public async Task<IActionResult> AddUser([FromBody] AddUserRequest newUser)
         {
             try
             {
