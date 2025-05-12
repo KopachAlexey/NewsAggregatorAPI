@@ -20,7 +20,7 @@ namespace NewsAggregatorServices.Services
                         Url = i.Links[0].Uri.ToString(),
                         Headline = i.Title.Text,
                         Summary = i.Summary is null? "" : i.Summary.Text,
-                        PublicationDate = i.PublishDate.Date,
+                        PublicationDate = DateTimeOffset.UtcNow,
                         SourceId = source.Id
                     })
                     .ToArray();
