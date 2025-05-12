@@ -23,6 +23,7 @@ namespace NewsAggregatorCQS.Querys.Handlers
                 .Include(c => c.User)
                 .ThenInclude(u => u.Role)
                 .Include(c => c.News)
+                .Include(c => c.UserCommentReactions)
                 .SingleOrDefaultAsync(c => c.Id.Equals(request.Id), cancellationToken);
             return comment is null ? null : _commentMapper.EntityToCommentDTO(comment);
         }
