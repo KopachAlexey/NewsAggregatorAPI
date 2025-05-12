@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NewsAggregatorCore;
+using NewsAggregatorCore.DTO;
 using NewsAggregatorMapping.Mappers;
 using NewsAggregatorModels.Models;
 using NewsAggregatorServices.Abstracts;
@@ -16,15 +18,19 @@ namespace NewsAggregatorAPI.Controllers
         readonly UserMapper _userMapper;
         readonly OperationMapper _operationMapper;
         readonly IValidator<AddUserRequest> _userValidator;
+        readonly IValidator<UpdateUserRequest> _updateUserValidator;
 
         public UserController(IUserServices userServices, IPasswordHashing passwordHashing, UserMapper userMapper,
-            IValidator<AddUserRequest> userValidator, OperationMapper operationMapper)
+            IValidator<AddUserRequest> userValidator, OperationMapper operationMapper, 
+            IValidator<UpdateUserRequest> updateUserValidator)
         {
             _userServices = userServices;
             _passwordHashing = passwordHashing;
             _userMapper = userMapper;
             _userValidator = userValidator;
             _operationMapper = operationMapper;
+            _updateUserValidator = updateUserValidator;
+            _updateUserValidator = updateUserValidator;
         }
 
         [HttpPost]
@@ -135,23 +141,62 @@ namespace NewsAggregatorAPI.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateUserById(Guid id, [FromForm]AddUserRequest newUserData)
+        public async Task<IActionResult> UpdateUserById(Guid id, [FromBody]UpdateUserRequest newUserData)
         {
             try
             {
-                var validationResult = _userValidator.Validate(newUserData);
+                var validationResult = _updateUserValidator.Validate(newUserData);
                 if (!validationResult.IsValid)
                     return BadRequest();
-                var userDTO = _userMapper.NewUserReuestToUserDTO(newUserData);
-                userDTO.PasswordHash = _passwordHashing.HashPassword(newUserData.Password);
+                var user = await _userServices.GetUserByIdAsync(id);
+                if (user is null)
+                    return NotFound();
+                if (!_passwordHashing.VerifyPassword(newUserData.Password, user.PasswordHash))
+                    return Unauthorized();
+                var userDTO = new UpdateUserDTO
+                {
+                    Login = user.Login,
+                    Email = user.Email,
+                    PasswordHash = newUserData.NewPassword is null ? user.PasswordHash 
+                    : _passwordHashing.HashPassword(newUserData.NewPassword),
+                    NewLogin = newUserData.Login,
+                    NewEmail = newUserData.Email
+                };
                 var operationResult = await _userServices.UpdateUserByIdAsync(id, userDTO);
                 if(operationResult.IsSuccessful)
                     return NoContent();
                 else
                     return Conflict(_operationMapper.ResultToResponse(operationResult));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [Authorize]
+        [HttpPatch("update-user-news-rate/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateUserNewsRateById(Guid id, [FromBody] UpdateUserNewsRateRequest updateUserNewsRate)
+        {
+            try
+            {
+                if (updateUserNewsRate.NewsRate < NewsAggregatorConstants.MinNewsRate 
+                        || updateUserNewsRate.NewsRate > NewsAggregatorConstants.MaxNewsRate)
+                    return BadRequest();
+                var user = await _userServices.GetUserByIdAsync(id);
+                if (user is null)
+                    return NotFound();
+                await _userServices.UpdateUserNewsRateByIdAsync(id, updateUserNewsRate.NewsRate);
+                return NoContent();
             }
             catch (Exception)
             {
