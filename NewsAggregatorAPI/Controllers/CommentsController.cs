@@ -22,7 +22,7 @@ namespace NewsAggregatorAPI.Controllers
             _commentValidator = commentValidator;
         }
 
-        [HttpGet]
+        [HttpGet("get-comments-by-news-id")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<CommentResponse>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCommentsByNewsId(Guid newsId)
@@ -40,7 +40,7 @@ namespace NewsAggregatorAPI.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{id}")]
+        [HttpDelete("del-comment/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -62,7 +62,7 @@ namespace NewsAggregatorAPI.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPost("add-comment")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
