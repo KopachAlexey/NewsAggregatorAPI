@@ -11,6 +11,6 @@
         public Guid UserId { get; set; }
         public News? News { get; set; }
         public Guid NewsId { get; set; }
-        public List<UserCommentReaction> UserCommentReactions { get; set; }
+        public List<UserCommentReaction> UserCommentReactions { get; set; } = new();
     }
 }
