@@ -20,7 +20,6 @@ namespace NewsAggregatorCQS.Commands.Handlers
             user.Login = request.NewUserData.Login;
             user.PasswordHash = request.NewUserData.PasswordHash;
             user.Email = request.NewUserData.Email;
-            //user.RoleId = request.NewUserData.RoleId;
             await _dbContext.SaveChangesAsync();
         }
     }
