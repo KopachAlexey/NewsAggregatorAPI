@@ -7,7 +7,7 @@ namespace NewsAggregatorMapping.Mappers
     [Mapper]
     public partial class UserCommentReactionMapper
     {
-        [MapProperty(nameof(UserCommentReaction.Reaction.ReactionName), nameof(UserCommentReactionDTO.ReactionName))]
+        [MapProperty(nameof(UserCommentReaction.Reaction.Name), nameof(UserCommentReactionDTO.ReactionName))]
         [MapProperty(nameof(UserCommentReaction.User.Login), nameof(UserCommentReactionDTO.UserLogin))]
         public partial UserCommentReactionDTO EntityToDto(UserCommentReaction userCommentReaction);
 
