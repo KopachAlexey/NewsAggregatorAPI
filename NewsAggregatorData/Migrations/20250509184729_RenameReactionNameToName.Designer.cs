@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NewsAggregatorData;
 
@@ -11,9 +12,11 @@ using NewsAggregatorData;
 namespace NewsAggregatorData.Migrations
 {
     [DbContext(typeof(NewsAggregatorContext))]
-    partial class NewsAggregatorContextModelSnapshot : ModelSnapshot
+    [Migration("20250509184729_RenameReactionNameToName")]
+    partial class RenameReactionNameToName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,7 +101,7 @@ namespace NewsAggregatorData.Migrations
 
                     b.ToTable("News", t =>
                         {
-                            t.HasCheckConstraint("ValidRate", "PositivityRate >= -5 AND PositivityRate <= 5");
+                            t.HasCheckConstraint("ValidRate", "PositivityRate >= -10 AND PositivityRate <= 10");
                         });
                 });
 
@@ -207,11 +210,6 @@ namespace NewsAggregatorData.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<double>("NewsMinRate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0);
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -222,18 +220,13 @@ namespace NewsAggregatorData.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
+                    b.HasAlternateKey("Email");
 
-                    b.HasIndex("Login")
-                        .IsUnique();
+                    b.HasAlternateKey("Login");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users", t =>
-                        {
-                            t.HasCheckConstraint("ValidNewsMinRate", "NewsMinRate >= -5 AND NewsMinRate <= 5");
-                        });
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("NewsAggregatorData.Entities.UserCommentReaction", b =>
@@ -253,12 +246,11 @@ namespace NewsAggregatorData.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("UserId", "CommentId");
+
                     b.HasIndex("CommentId");
 
                     b.HasIndex("ReactionId");
-
-                    b.HasIndex("UserId", "CommentId")
-                        .IsUnique();
 
                     b.ToTable("UserCommentReactions");
                 });
