@@ -25,7 +25,7 @@ namespace NewsAggregatorAPI
 
             builder.Services.AddDbContext<NewsAggregatorContext>(opt =>
             {
-                opt.UseSqlServer(builder.Configuration.GetConnectionString("Alternative"));
+                opt.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
             });
 
 
@@ -51,19 +51,6 @@ namespace NewsAggregatorAPI
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
-
-                //opt.Events = new JwtBearerEvents
-                //{
-                //    OnAuthenticationFailed = context =>
-                //    {
-                //        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                //        {
-                //            context.Response.Headers.Add("Token-Expired", "true");
-                //        }
-                //        return Task.CompletedTask;
-                //    }
-                //};
-
             });
 
             AddServices(builder);
@@ -79,7 +66,7 @@ namespace NewsAggregatorAPI
 
             builder.Services.AddHangfire(cfg =>
             {
-                cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireAlternative"));
+                cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireDefault"));
             });
 
             builder.Services.AddHangfireServer();
@@ -127,7 +114,6 @@ namespace NewsAggregatorAPI
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -199,6 +185,7 @@ namespace NewsAggregatorAPI
             builder.Services.AddScoped<IValidator<UpdateTokensRequest>, TokensValidator>();
             builder.Services.AddScoped<IValidator<AddUserRequest>, UserValidator>();
             builder.Services.AddScoped<IValidator<ReactionToCommentRequest>, ReactionToCommentRequestValidator>();
+            builder.Services.AddScoped<IValidator<UpdateUserRequest>, UpdateUserRequestValidator>();
         }
 
     }
