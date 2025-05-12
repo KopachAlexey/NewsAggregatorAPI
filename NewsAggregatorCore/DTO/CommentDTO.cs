@@ -9,5 +9,6 @@
         public Guid UserId { get; set; }
         public NewsDTO? News { get; set; }
         public Guid NewsId { get; set; }
+        public List<UserCommentReactionDTO> UserCommentReactions { get; set; } = new();
     }
 }
