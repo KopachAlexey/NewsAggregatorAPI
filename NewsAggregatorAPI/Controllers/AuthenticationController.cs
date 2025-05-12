@@ -20,7 +20,8 @@ namespace NewsAggregatorAPI.Controllers
         readonly IValidator<AddUserRequest> _userValidator;
 
         public AuthenticationController(ITokenServices tokenServices, IUserServices userServices, 
-            IPasswordHashing passwordHashing, IValidator<UpdateTokensRequest> tokensValidator, IValidator<AddUserRequest> userValidator)
+            IPasswordHashing passwordHashing, IValidator<UpdateTokensRequest> tokensValidator, 
+            IValidator<AddUserRequest> userValidator)
         {
             _tokenServices = tokenServices;
             _userServices = userServices;
@@ -36,32 +37,31 @@ namespace NewsAggregatorAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Login( [FromForm]LoginRequest loginRequest)
         {
-            //try
-            //{
-            var validationResult = _userValidator.Validate(
-                new AddUserRequest 
-                { 
-                    Login = loginRequest.Login, 
-                    Password = loginRequest.Password 
+            try
+            {
+                var validationResult = _userValidator.Validate(
+                new AddUserRequest
+                {
+                    Login = loginRequest.Login,
+                    Password = loginRequest.Password
                 },
                 opt =>
                 {
                     opt.IncludeProperties(u => u.Login);
                     opt.IncludeProperties(u => u.Password);
-                }
-            );
-            if (!validationResult.IsValid)
+                });
+                 if (!validationResult.IsValid)
                 return BadRequest();
-            var user = await _userServices.GetUserByLoginAsync(loginRequest.Login);
-            if (user is null || !_passwordHashing.VerifyPassword(loginRequest.Password, user.PasswordHash))
-                return Unauthorized();
-            else
-                return Ok(await _tokenServices.GenerateTokensAsync(user));
-            //}
-            //catch (Exception)
-            //{
-            //    return StatusCode(StatusCodes.Status500InternalServerError);
-            //}
+                var user = await _userServices.GetUserByLoginAsync(loginRequest.Login);
+                if (user is null || !_passwordHashing.VerifyPassword(loginRequest.Password, user.PasswordHash))
+                    return Unauthorized();
+                else
+                    return Ok(await _tokenServices.GenerateTokensAsync(user));
+                }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [Authorize]
@@ -71,19 +71,18 @@ namespace NewsAggregatorAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Logout()
         {
-            //try
-            //{
-
-            //}
-            //catch (Exception)
-            //{
-
-            //    throw;
-            //}
-            if(!Guid.TryParse(User.FindFirstValue(NewsAggregatorConstants.RefreshTokenIdClaim), out var refreshTokenId))
-                return Unauthorized();
-            await _tokenServices.DelRefreshTokenByIdAsync(refreshTokenId);
-            return NoContent();
+            try
+            {
+                if (!Guid.TryParse(User.FindFirstValue(NewsAggregatorConstants.RefreshTokenIdClaim), out var refreshTokenId))
+                    return Unauthorized();
+                await _tokenServices.DelRefreshTokenByIdAsync(refreshTokenId);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+           
         }
 
         [HttpPost("update-tokens")]
@@ -93,27 +92,27 @@ namespace NewsAggregatorAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateTokens( [FromBody] UpdateTokensRequest updateTokenRequest)
         {
-            //try
-            //{
-            var validationResult = _tokensValidator.Validate(updateTokenRequest);
-            if (!validationResult.IsValid)
-                return BadRequest();
-            var principal = _tokenServices.GetPrincipalFromExpiredToken(updateTokenRequest.AccessToken);
-            if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
-                return Unauthorized();
-            if (!Guid.TryParse(principal.FindFirstValue(NewsAggregatorConstants.RefreshTokenIdClaim), out var refreshTokenId))
-                return Unauthorized();
-            var user = await _userServices.GetUserByIdAsync(userId);
-            if (!await _tokenServices.VerifyRefreshTokenAsync(refreshTokenId, userId, updateTokenRequest.RefreshToken) 
-                || user is null)
-                return Unauthorized();
-            await _tokenServices.DelRefreshTokenByIdAsync(refreshTokenId);
-            return Ok(await _tokenServices.GenerateTokensAsync(user));
-            //}
-            //catch (Exception)
-            //{
-            //    return StatusCode(StatusCodes.Status500InternalServerError);
-            //}
+            try
+            {
+                var validationResult = _tokensValidator.Validate(updateTokenRequest);
+                if (!validationResult.IsValid)
+                    return BadRequest();
+                var principal = _tokenServices.GetPrincipalFromExpiredToken(updateTokenRequest.AccessToken);
+                if (!Guid.TryParse(principal.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+                    return Unauthorized();
+                if (!Guid.TryParse(principal.FindFirstValue(NewsAggregatorConstants.RefreshTokenIdClaim), out var refreshTokenId))
+                    return Unauthorized();
+                var user = await _userServices.GetUserByIdAsync(userId);
+                if (!await _tokenServices.VerifyRefreshTokenAsync(refreshTokenId, userId, updateTokenRequest.RefreshToken) 
+                    || user is null)
+                    return Unauthorized();
+                await _tokenServices.DelRefreshTokenByIdAsync(refreshTokenId);
+                return Ok(await _tokenServices.GenerateTokensAsync(user));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }   
     }
 }
