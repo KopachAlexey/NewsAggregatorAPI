@@ -12,6 +12,7 @@ namespace NewsAggregatorServices.Abstracts
 
         Task<OperationResultDTO> DelUserByLoginAsync(string login);
 
-        Task<OperationResultDTO> UpdateUserByIdAsync(Guid id, UserDTO newUserData);
+        Task<OperationResultDTO> UpdateUserByIdAsync(Guid id, UpdateUserDTO newUserData);
+        Task UpdateUserNewsRateByIdAsync(Guid id, double newNewsRate);
     }
 }

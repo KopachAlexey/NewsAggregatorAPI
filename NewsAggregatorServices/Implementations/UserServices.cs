@@ -20,7 +20,7 @@ namespace NewsAggregatorServices.Implementations
         public async Task<AddResourceResultDTO> AddNewUserAsync(UserDTO newUser)
         {
             Guid newUserId = default;
-            var userPreliminaryResult = await GetPreliminaryResultAsync(newUser);
+            var userPreliminaryResult = await GetPreliminaryAddResultAsync(newUser);
             if (userPreliminaryResult.IsSuccessful)
             {
                 var role = await _mediator.Send(new GetRoleByNameQuery { RoleName = NewsAggregatorConstants.UserRole });
@@ -70,15 +70,29 @@ namespace NewsAggregatorServices.Implementations
             return await _mediator.Send(new GetUserByLoginQuery { Login = login });
         }
 
-        public async Task<OperationResultDTO> UpdateUserByIdAsync(Guid id, UserDTO newUserData)
+        public async Task<OperationResultDTO> UpdateUserByIdAsync(Guid id, UpdateUserDTO newUserData)
         {
-            var userPreliminaryResult = await GetPreliminaryResultAsync(newUserData);
+            var userPreliminaryResult = await GetPreliminaryUpdateResultAsync(newUserData);
             if (userPreliminaryResult.IsSuccessful)
-                await _mediator.Send(new UpdateUserByIdCommand { Id = id, NewUserData = newUserData });
+            {
+                var updateUserDTO = new UserDTO
+                {
+                    Login = newUserData.NewLogin ?? newUserData.Login,
+                    Email = newUserData.NewEmail ?? newUserData.Email,
+                    PasswordHash = newUserData.PasswordHash
+                };
+                await _mediator.Send(new UpdateUserByIdCommand { Id = id, NewUserData = updateUserDTO });
+                await _mediator.Send(new DelTokensByUserIdCommand { UserId = id });
+            }
             return userPreliminaryResult;
         }
 
-        private async Task<OperationResultDTO> GetPreliminaryResultAsync(UserDTO user)
+        public async Task UpdateUserNewsRateByIdAsync(Guid id, double newNewsRate)
+        {
+            await _mediator.Send(new UpdateUserNewsRateByIdCommand { UserId = id, NewNewsMinRate = newNewsRate});
+        }
+
+        private async Task<OperationResultDTO> GetPreliminaryAddResultAsync(UserDTO user)
         {
             var isSuccessful = true;
             var error = String.Empty;
@@ -92,6 +106,37 @@ namespace NewsAggregatorServices.Implementations
                 isSuccessful = false;
             }
             if ((await _mediator.Send(new GetUserByEmailQuery { Email = user.Email })) is not null)
+            {
+                messages.Add(NewsAggregatorMessages.UniqueUserEmail);
+                fields.Add(OperationFieldsEnum.Email.ToString());
+                error = OperationErrorsEnum.USER_ALREADY_EXISTS.ToString();
+                isSuccessful = false;
+            }
+            return new OperationResultDTO
+            {
+                IsSuccessful = isSuccessful,
+                Error = error,
+                Messages = messages,
+                Filds = fields
+            };
+        }
+
+        private async Task<OperationResultDTO> GetPreliminaryUpdateResultAsync(UpdateUserDTO newUserData)
+        {
+            var isSuccessful = true;
+            var error = String.Empty;
+            var messages = new List<string>();
+            var fields = new List<string>();
+            if (newUserData.NewLogin is not null && newUserData.NewLogin != newUserData.Login
+                && (await GetUserByLoginAsync(newUserData.NewLogin)) is not null)
+            {
+                messages.Add(NewsAggregatorMessages.UniqueUserLogin);
+                fields.Add(OperationFieldsEnum.Login.ToString());
+                error = OperationErrorsEnum.USER_ALREADY_EXISTS.ToString();
+                isSuccessful = false;
+            }
+            if (newUserData.NewEmail is not null && newUserData.NewEmail != newUserData.Email
+                && (await _mediator.Send(new GetUserByEmailQuery { Email = newUserData.NewEmail })) is not null)
             {
                 messages.Add(NewsAggregatorMessages.UniqueUserEmail);
                 fields.Add(OperationFieldsEnum.Email.ToString());
