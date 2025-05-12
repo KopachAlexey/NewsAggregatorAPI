@@ -5,7 +5,7 @@
         private Guid _id;
 
         public Guid Id => _id;
-        public string ReactionName { get; set; }
+        public string Name { get; set; }
         public List<UserCommentReaction> UserCommentReactions { get; set; }
     }
 }
