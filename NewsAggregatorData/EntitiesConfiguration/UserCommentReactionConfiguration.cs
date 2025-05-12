@@ -9,7 +9,7 @@ namespace NewsAggregatorData.EntitiesConfiguration
         public void Configure(EntityTypeBuilder<UserCommentReaction> builder)
         {
             builder.Property(u => u.Id).HasField("_id");
-            builder.HasAlternateKey(u => new { u.UserId, u.CommentId });
+            builder.HasIndex(u => new { u.UserId, u.CommentId }).IsUnique();
             builder
                 .HasOne(u => u.Reaction)
                 .WithMany(u => u.UserCommentReactions)

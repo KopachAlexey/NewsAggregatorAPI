@@ -9,9 +9,9 @@ namespace NewsAggregatorData.EntitiesConfiguration
         public void Configure(EntityTypeBuilder<Reaction> builder)
         {
             builder.Property(r => r.Id).HasField("_id");
-            builder.Property(r => r.ReactionName).HasColumnType("nvarchar");
-            builder.Property(r => r.ReactionName).HasMaxLength(30);
-            builder.HasAlternateKey(r => r.ReactionName);
+            builder.Property(r => r.Name).HasColumnType("nvarchar");
+            builder.Property(r => r.Name).HasMaxLength(30);
+            builder.HasAlternateKey(r => r.Name);
         }
     }
 }

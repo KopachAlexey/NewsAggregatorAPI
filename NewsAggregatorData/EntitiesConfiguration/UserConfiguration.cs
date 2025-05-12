@@ -14,8 +14,10 @@ namespace NewsAggregatorData.EntitiesConfiguration
             builder.Property(u => u.Login).HasMaxLength(30);
             builder.Property(u => u.Email).HasColumnType("nvarchar");
             builder.Property(u => u.Email).HasMaxLength(100);
-            builder.HasAlternateKey(u => u.Login);
-            builder.HasAlternateKey(u => u.Email);
+            builder.Property(u => u.NewsMinRate).HasDefaultValue(0);
+            builder.ToTable(t => t.HasCheckConstraint("ValidNewsMinRate", "NewsMinRate >= -5 AND NewsMinRate <= 5"));
+            builder.HasIndex(u => u.Login).IsUnique();
+            builder.HasIndex(u => u.Email).IsUnique();
         }
     }
 }

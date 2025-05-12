@@ -13,7 +13,7 @@ namespace NewsAggregatorData.EntitiesConfiguration
             builder.Property(n => n.Headline).HasMaxLength(500);
             builder.Property(n => n.Url).HasMaxLength(3000);
             builder.Property(n => n.ImageUrl).HasMaxLength(3000);
-            builder.ToTable(t => t.HasCheckConstraint("ValidRate", "PositivityRate >= -10 AND PositivityRate <= 10"));
+            builder.ToTable(t => t.HasCheckConstraint("ValidRate", "PositivityRate >= -5 AND PositivityRate <= 5"));
             builder.HasAlternateKey(n => n.Url);
         }
     }
