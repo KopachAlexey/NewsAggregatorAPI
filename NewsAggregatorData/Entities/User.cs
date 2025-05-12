@@ -8,6 +8,7 @@
         public string PasswordHash { get; set; }
         public string Login { get; set; }
         public string Email { get; set; }
+        public double NewsMinRate { get; set; }
         public List<Comment> Comments { get; set; }
         public List<RefreshToken> RefreshTokens { get; set; }
         public List<UserCommentReaction> UserCommentReactions { get; set; }
