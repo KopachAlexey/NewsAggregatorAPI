@@ -40,7 +40,8 @@ namespace NewsAggregatorServices.Implementations
             if (afinnConfiguration is null || !afinnConfiguration.GetChildren().Any())
                 throw new Exception("There is no AFINN in the configuration");
             return afinnConfiguration.GetChildren().ToDictionary(s => s.Key,
-                s => Int32.TryParse(s.Value, out int value) ? value : default(int?));
+                s => Int32.TryParse(s.Value, out int value) ? value : default(int?), 
+                StringComparer.CurrentCultureIgnoreCase);
         }
     }
 }
