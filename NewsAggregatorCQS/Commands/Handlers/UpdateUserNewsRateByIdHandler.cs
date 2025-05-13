@@ -18,7 +18,7 @@ namespace NewsAggregatorCQS.Commands.Handlers
             var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Id.Equals(request.UserId),
                 cancellationToken);
             if (user is null)
-                return;
+                throw new Exception("User does not exists");
             user.NewsMinRate = request.NewNewsMinRate;
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
