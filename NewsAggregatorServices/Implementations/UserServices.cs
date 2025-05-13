@@ -12,7 +12,7 @@ namespace NewsAggregatorServices.Implementations
     {
         readonly IMediator _mediator;
 
-        public UserServices(IMediator mediator, IPasswordHashing passwordHashing)
+        public UserServices(IMediator mediator)
         {
             _mediator = mediator;
         }
