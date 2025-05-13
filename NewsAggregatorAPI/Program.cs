@@ -6,6 +6,7 @@ using NewsAggregatorServices.Services;
 using Hangfire;
 using NewsAggregatorMapping.Mappers;
 using System.Text;
+using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -25,10 +26,13 @@ namespace NewsAggregatorAPI
 
             builder.Services.AddDbContext<NewsAggregatorContext>(opt =>
             {
-                opt.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+                opt.UseSqlServer(builder.Configuration.GetConnectionString("Alternative"));
             });
 
-
+            builder.Host.UseSerilog((context, config) =>
+            {
+                config.ReadFrom.Configuration(context.Configuration);
+            });
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
             var secret = Encoding.UTF8.GetBytes(jwtSettings["Secret"]);
 
@@ -66,7 +70,7 @@ namespace NewsAggregatorAPI
 
             builder.Services.AddHangfire(cfg =>
             {
-                cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireDefault"));
+                cfg.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangFireAlternative"));
             });
 
             builder.Services.AddHangfireServer();
