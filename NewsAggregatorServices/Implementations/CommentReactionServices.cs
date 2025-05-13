@@ -36,12 +36,12 @@ namespace NewsAggregatorServices.Implementations
             return new AddResourceResultDTO { Id = id, OperationResult = operationResult };
         }
 
-        public async Task<UserCommentReactionDTO?> GetCommentReactionAsync(Guid commentId, Guid userId)
+        public async Task<UserCommentReactionDTO?> GetCommentReactionByUserIdAsync(Guid commentId, Guid userId)
         {
             return await _mediator.Send(new GetUserCommentReactionQuery { CommentId = commentId, UserId = userId });
         }
 
-        public async Task<UserCommentReactionDTO[]> GetCommentReactionsAsync(Guid commentId, string reactionName)
+        public async Task<UserCommentReactionDTO[]> GetCommentReactionsByNameAsync(Guid commentId, string reactionName)
         {
             var reaction = await _mediator.Send(new GetReactionByNameQuery { ReactionName = reactionName });
             if (reaction is null)

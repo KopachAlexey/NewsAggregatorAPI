@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorCQS", "NewsAg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorCore", "NewsAggregatorCore\NewsAggregatorCore.csproj", "{817438B3-95E2-4100-948B-9FB359472318}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAggregatorTests", "NewsAggregatorTests\NewsAggregatorTests.csproj", "{B43D69B7-2845-444A-821F-76E2053FABD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{817438B3-95E2-4100-948B-9FB359472318}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{817438B3-95E2-4100-948B-9FB359472318}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{817438B3-95E2-4100-948B-9FB359472318}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B43D69B7-2845-444A-821F-76E2053FABD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B43D69B7-2845-444A-821F-76E2053FABD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B43D69B7-2845-444A-821F-76E2053FABD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B43D69B7-2845-444A-821F-76E2053FABD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
