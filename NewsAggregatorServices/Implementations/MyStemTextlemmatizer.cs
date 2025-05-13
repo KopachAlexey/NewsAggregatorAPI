@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 using NewsAggregatorServices.Abstracts;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -12,28 +12,36 @@ namespace NewsAggregatorServices.Implementations
         const int _writingPause = 10;
         const int _killingMyStemPause = 500;
 
-        private readonly IConfiguration _configuration;
-        private Process _myStem;
+        readonly ILogger<MyStemTextlemmatizer> _logger;
+        readonly IConfiguration _configuration;
+        Process _myStem;
 
-        public MyStemTextlemmatizer(IConfiguration configuration)
+        public MyStemTextlemmatizer(IConfiguration configuration, ILogger<MyStemTextlemmatizer> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<Dictionary<Guid, string[]>> GetLemmasFromTextsAsync(Dictionary<Guid, string> textById, CancellationToken cancellationToken)
         {
-            StartMyStem();
-            var idArray = textById.Keys.ToArray();
-            var textsArray = textById.Values.ToArray();
-            var lemmasTask = ReadLemmasFromMyStemAsync(idArray, cancellationToken);
-            var errorsTask = ReadErrorsFromMyStemAsync(idArray, cancellationToken);
-            await WriteToMyStemAsync(textsArray, cancellationToken);
-            await _myStem.WaitForExitAsync(cancellationToken);
-            await Task.WhenAll(lemmasTask, errorsTask);
-            var errorsById = await errorsTask;
-            if (errorsById.Values.Any())
+            try
+            {
+                StartMyStem();
+                var idArray = textById.Keys.ToArray();
+                var textsArray = textById.Values.ToArray();
+                var lemmasTask = ReadLemmasFromMyStemAsync(idArray, cancellationToken);
+                var errorsTask = ReadErrorsFromMyStemAsync(idArray, cancellationToken);
+                await WriteToMyStemAsync(textsArray, cancellationToken);
+                await _myStem.WaitForExitAsync(cancellationToken);
+                await Task.WhenAll(lemmasTask, errorsTask);
+                var errorsById = await errorsTask;
+                return await lemmasTask;
+            }
+            catch (Exception)
+            {
+                _logger.LogError($"Error while trying to get lemmas from texts {_myStem.ProcessName}");
                 throw new Exception("MyStem error");
-            return await lemmasTask;
+            }
         }
 
         private string[] DeserializeLemmas(string? jsonLemmas)
