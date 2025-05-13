@@ -19,10 +19,11 @@ namespace NewsAggregatorAPI.Controllers
         readonly OperationMapper _operationMapper;
         readonly IValidator<AddUserRequest> _userValidator;
         readonly IValidator<UpdateUserRequest> _updateUserValidator;
+        readonly ILogger<UserController> _logger;
 
         public UserController(IUserServices userServices, IPasswordHashing passwordHashing, UserMapper userMapper,
             IValidator<AddUserRequest> userValidator, OperationMapper operationMapper, 
-            IValidator<UpdateUserRequest> updateUserValidator)
+            IValidator<UpdateUserRequest> updateUserValidator, ILogger<UserController> logger)
         {
             _userServices = userServices;
             _passwordHashing = passwordHashing;
@@ -31,6 +32,7 @@ namespace NewsAggregatorAPI.Controllers
             _operationMapper = operationMapper;
             _updateUserValidator = updateUserValidator;
             _updateUserValidator = updateUserValidator;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -49,12 +51,18 @@ namespace NewsAggregatorAPI.Controllers
                 newUserDTO.PasswordHash = _passwordHashing.HashPassword(newUser.Password);
                 var addUserResult = await _userServices.AddNewUserAsync(newUserDTO);
                 if (addUserResult.OperationResult.IsSuccessful)
-                    return Created($"api/User/{addUserResult.Id}", new {Id = addUserResult.Id });
+                {
+                    _logger.LogInformation($"Edd new user with login = {newUser.Login} " +
+                        $"and id = {addUserResult.Id}");
+                    return Created($"api/User/{addUserResult.Id}", new { Id = addUserResult.Id });
+                }
                 else
                     return Conflict(_operationMapper.ResultToResponse(addUserResult.OperationResult));
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to add new user with login = {newUser.Login}" +
+                    $" and email = {newUser.Email}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -83,6 +91,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to get user by login = {login}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -104,6 +113,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to get user by user id = {id}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -133,6 +143,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to del user by login = {login}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -174,6 +185,8 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to update user, user id = {id} " +
+                    $"new loggin = {newUserData.Login} new email = {newUserData.Email}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -200,6 +213,8 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to update user news rate, user id = {id}" +
+                    $"new news rate = {updateUserNewsRate.NewsRate}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

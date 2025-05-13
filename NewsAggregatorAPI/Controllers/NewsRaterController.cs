@@ -14,13 +14,15 @@ namespace NewsAggregatorAPI.Controllers
         readonly INewsRater _newsRater;
         readonly ICronJobSettingFactory _cronJobSettingFactory;
         readonly IBackgroundJobServices _backgroundJobServices;
+        readonly ILogger<NewsRaterController> _logger;
 
         public NewsRaterController(INewsRater newsRater, ICronJobSettingFactory cronJobSettingFactory, 
-            IBackgroundJobServices backgroundJobServices)
+            IBackgroundJobServices backgroundJobServices, ILogger<NewsRaterController> logger)
         {
             _newsRater = newsRater;
             _cronJobSettingFactory = cronJobSettingFactory;
             _backgroundJobServices = backgroundJobServices;
+            _logger = logger;
         }
 
         [HttpPost("rate-once")]
@@ -37,6 +39,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to rate news once");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
             
@@ -61,6 +64,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to start news rating");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
            
@@ -87,6 +91,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to get all news rating jobs");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -108,6 +113,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to stop news rating");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

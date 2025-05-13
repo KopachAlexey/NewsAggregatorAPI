@@ -14,6 +14,7 @@ namespace NewsAggregatorAPI.Controllers
     public class AuthenticationController : ControllerBase
     {
         readonly ITokenServices _tokenServices;
+        readonly ILogger<AuthenticationController> _logger;
         readonly IUserServices _userServices;
         readonly IPasswordHashing _passwordHashing;
         readonly IValidator<UpdateTokensRequest> _tokensValidator;
@@ -21,13 +22,14 @@ namespace NewsAggregatorAPI.Controllers
 
         public AuthenticationController(ITokenServices tokenServices, IUserServices userServices, 
             IPasswordHashing passwordHashing, IValidator<UpdateTokensRequest> tokensValidator, 
-            IValidator<AddUserRequest> userValidator)
+            IValidator<AddUserRequest> userValidator, ILogger<AuthenticationController> logger)
         {
             _tokenServices = tokenServices;
             _userServices = userServices;
             _passwordHashing = passwordHashing;
             _tokensValidator = tokensValidator;
             _userValidator = userValidator;
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -51,7 +53,7 @@ namespace NewsAggregatorAPI.Controllers
                     opt.IncludeProperties(u => u.Password);
                 });
                  if (!validationResult.IsValid)
-                return BadRequest();
+                    return BadRequest();
                 var user = await _userServices.GetUserByLoginAsync(loginRequest.Login);
                 if (user is null || !_passwordHashing.VerifyPassword(loginRequest.Password, user.PasswordHash))
                     return Unauthorized();
@@ -60,6 +62,7 @@ namespace NewsAggregatorAPI.Controllers
                 }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to enter user with login = {loginRequest.Login}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -80,6 +83,10 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                if(!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+                    _logger.LogError($"Error when trying to log out user, userId = {userId}");
+                else
+                    _logger.LogError($"Error when trying to log out unknown user");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
            
@@ -111,6 +118,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to update token, accessToken = {updateTokenRequest.AccessToken}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }   

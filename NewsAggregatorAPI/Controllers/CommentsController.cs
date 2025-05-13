@@ -14,12 +14,15 @@ namespace NewsAggregatorAPI.Controllers
         readonly ICommentServices _commentServices;
         readonly CommentMapper _commentMapper;
         readonly IValidator<AddCommentRequest> _commentValidator;
+        readonly ILogger<CommentsController> _logger;
 
-        public CommentsController(ICommentServices commentServices, CommentMapper commentMapper, IValidator<AddCommentRequest> commentValidator)
+        public CommentsController(ICommentServices commentServices, CommentMapper commentMapper, 
+            IValidator<AddCommentRequest> commentValidator, ILogger<CommentsController> logger)
         {
             _commentServices = commentServices;
             _commentMapper = commentMapper;
             _commentValidator = commentValidator;
+            _logger = logger;
         }
 
         [HttpGet("get-comments-by-news-id")]
@@ -35,6 +38,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to get all comments by news id = {newsId}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -57,6 +61,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to delet comment with id = {id}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -80,6 +85,8 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to add a comment from user with " +
+                    $"id = {commentRequest.UserId} to news with id = {commentRequest.NewsId}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
            

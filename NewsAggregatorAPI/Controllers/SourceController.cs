@@ -11,11 +11,14 @@ namespace NewsAggregatorAPI.Controllers
     {
         readonly ISourceServices _sourceServices;
         readonly SourceMapper _sourceMapper;
+        readonly ILogger<SourceController> _logger;
 
-        public SourceController(ISourceServices sourceServices, SourceMapper sourceMapper)
+        public SourceController(ISourceServices sourceServices, SourceMapper sourceMapper, 
+            ILogger<SourceController> logger)
         {
             _sourceServices = sourceServices;
             _sourceMapper = sourceMapper;
+            _logger = logger;
         }
    
         [HttpGet]
@@ -31,6 +34,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error when trying tp get all news source");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
            

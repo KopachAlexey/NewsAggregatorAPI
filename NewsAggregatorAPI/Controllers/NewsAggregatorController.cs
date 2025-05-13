@@ -15,14 +15,17 @@ namespace NewsAggregatorAPI.Controllers
         readonly ISourceServices _sourceServices;
         readonly IBackgroundJobServices _backgroundJobServices;
         readonly ICronJobSettingFactory _newsAggregationJobSettingFactory;
+        readonly ILogger<NewsAggregatorController> _logger;
 
         public NewsAggregatorController(INewsAggregator newsAggregator, ISourceServices sourceServices, 
-            IBackgroundJobServices backgroundJobServices, ICronJobSettingFactory newsAggregationJobSettingFactory)
+            IBackgroundJobServices backgroundJobServices, ICronJobSettingFactory newsAggregationJobSettingFactory, 
+            ILogger<NewsAggregatorController> logger)
         {
             _newsAggregator = newsAggregator;
             _sourceServices = sourceServices;
             _backgroundJobServices = backgroundJobServices;
             _newsAggregationJobSettingFactory = newsAggregationJobSettingFactory;
+            _logger = logger;
         }
 
         [HttpPost("start-aggregation")]
@@ -49,6 +52,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to start news aggregation");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
             
@@ -75,6 +79,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to stopp news aggregation");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -105,6 +110,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to get all news aggregation works");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -125,6 +131,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to aggregate news once");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

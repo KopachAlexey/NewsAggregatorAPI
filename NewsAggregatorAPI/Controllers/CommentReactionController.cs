@@ -13,15 +13,18 @@ namespace NewsAggregatorAPI.Controllers
     public class CommentReactionController : ControllerBase
     {
         readonly ICommentReactionServices _commentReactionServices;
+        readonly ILogger<CommentReactionController> _logger;
         readonly IValidator<ReactionToCommentRequest> _reactionToCommentValidator;
         readonly OperationMapper _operationMapper;
 
         public CommentReactionController(ICommentReactionServices commentReactionServices, 
-            IValidator<ReactionToCommentRequest> reactionToCommentValidator, OperationMapper operationMapper)
+            IValidator<ReactionToCommentRequest> reactionToCommentValidator, OperationMapper operationMapper,
+            ILogger<CommentReactionController> logger)
         {
             _commentReactionServices = commentReactionServices;
             _reactionToCommentValidator = reactionToCommentValidator;
             _operationMapper = operationMapper;
+            _logger = logger;
         }
 
         [HttpGet("get-comment-reactions-by-reaction-name")]
@@ -39,11 +42,13 @@ namespace NewsAggregatorAPI.Controllers
                     });
                 if(!validationResult.IsValid)
                     return BadRequest();
-                var commentReactions = await _commentReactionServices.GetCommentReactionsAsync(commentId, reactionName);
+                var commentReactions = await _commentReactionServices.GetCommentReactionsByNameAsync(commentId, reactionName);
                 return Ok(commentReactions);
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to get all reactions to comment with reaction name = {reactionName}, " +
+                    $"commentId = {commentId}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -57,11 +62,13 @@ namespace NewsAggregatorAPI.Controllers
         {
             try
             {
-                var commentReaction = await _commentReactionServices.GetCommentReactionAsync(commentId, userId);
+                var commentReaction = await _commentReactionServices.GetCommentReactionByUserIdAsync(commentId, userId);
                 return Ok(commentReaction);
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to get user reaction to comment with id = {commentId}, " +
+                    $"userId = {userId}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -89,6 +96,8 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to add reaction to comment with id = {reactionToComment.CommentId}, " +
+                    $"userId = {reactionToComment.UserId}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -116,6 +125,8 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to update reaction to comment with id = {reactionToComment.CommentId}, " +
+                   $"userId = {reactionToComment.UserId}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NewsAggregatorServices.Abstracts;
 using NewsAggregatorCore.DTO;
-using NewsAggregatorServices.Implementations;
 
 namespace NewsAggregatorAPI.Controllers
 {
@@ -13,15 +12,17 @@ namespace NewsAggregatorAPI.Controllers
     public class TokensCleanerController : ControllerBase
     {
         readonly IBackgroundJobServices _backgroundJobServices;
+        readonly ILogger<TokensCleanerController> _logger;
         readonly ITokenServices _tokenServices;
         readonly ICronJobSettingFactory _newsAggregationJobSettingFactory;
 
         public TokensCleanerController(IBackgroundJobServices backgroundJobServices, ITokenServices tokenServices, 
-            ICronJobSettingFactory newsAggregationJobSettingFactory)
+            ICronJobSettingFactory newsAggregationJobSettingFactory, ILogger<TokensCleanerController> logger)
         {
             _backgroundJobServices = backgroundJobServices;
             _tokenServices = tokenServices;
             _newsAggregationJobSettingFactory = newsAggregationJobSettingFactory;
+            _logger = logger;
         }
 
         [HttpPost("start-deletion-expired-tokens")]
@@ -44,6 +45,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to start deletion expired token job");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
            
@@ -67,6 +69,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to stop deletion expired token job");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
@@ -94,7 +97,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
-
+                _logger.LogError("Error while trying to get deletion expired token job");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

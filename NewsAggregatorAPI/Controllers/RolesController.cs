@@ -11,10 +11,12 @@ namespace NewsAggregatorAPI.Controllers
     public class RolesController : ControllerBase
     {
         readonly IRoleServices _roleServices;
+        readonly ILogger<RolesController> _logger;
 
-        public RolesController(IRoleServices roleServices)
+        public RolesController(IRoleServices roleServices, ILogger<RolesController> logger)
         {
             _roleServices = roleServices;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -31,6 +33,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError("Error while trying to get all roles");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

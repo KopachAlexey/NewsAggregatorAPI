@@ -15,13 +15,15 @@ namespace NewsAggregatorAPI.Controllers
         readonly INewsServices _newsServices;
         readonly IValidator<GetNewsPageRequest> _newsPageValidator;
         readonly OperationMapper _operationMapper;
+        readonly ILogger<NewsController> _logger;
 
         public NewsController(INewsServices newsServices, IValidator<GetNewsPageRequest> newsPageValidator, 
-            OperationMapper operationMapper)
+            OperationMapper operationMapper, ILogger<NewsController> logger)
         {
             _newsServices = newsServices;
             _newsPageValidator = newsPageValidator;
             _operationMapper = operationMapper;
+            _logger = logger;
         }
 
 
@@ -38,6 +40,7 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to get news with id = {id}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -50,7 +53,7 @@ namespace NewsAggregatorAPI.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateNewsRateById(Guid Id, double newRate)
+        public async Task<IActionResult> UpdateNewsRateById(Guid id, double newRate)
         {
             try
             {
@@ -60,7 +63,7 @@ namespace NewsAggregatorAPI.Controllers
                 });
                 if (!validationResult.IsValid)
                     return BadRequest();
-                var operationResult = await _newsServices.UpdateNewsRateByIdAsync(Id, newRate);
+                var operationResult = await _newsServices.UpdateNewsRateByIdAsync(id, newRate);
                 if (operationResult.IsSuccessful)
                     return NoContent();
                 else
@@ -68,46 +71,10 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to update news rate, news id = {id} " +
+                    $"new rate = {newRate}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-        }
-
-        [Authorize(Roles = "Developer, Admin, Moderator")]
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DelNewsById(Guid id)
-        {
-            try
-            {
-                await _newsServices.DelByIdAsync(id);
-                return NoContent();
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
-
-        [Authorize(Roles = "Developer, Admin")]
-        [HttpDelete("del-all")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DelAllNews()
-        {
-            try
-            {
-                await _newsServices.DelAllAsync();
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-            return NoContent();
         }
     }
 }

@@ -12,11 +12,14 @@ namespace NewsAggregatorAPI.Controllers
     {
         readonly INewsPagginator _newsPagginator;
         readonly IValidator<GetNewsPageRequest> _newsPageValidator;
+        readonly ILogger<NewsPagginatorController> _logger;
 
-        public NewsPagginatorController(INewsPagginator newsPagginator, IValidator<GetNewsPageRequest> newsPageValidator)
+        public NewsPagginatorController(INewsPagginator newsPagginator, IValidator<GetNewsPageRequest> newsPageValidator, 
+            ILogger<NewsPagginatorController> logger)
         {
             _newsPagginator = newsPagginator;
             _newsPageValidator = newsPageValidator;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -36,6 +39,8 @@ namespace NewsAggregatorAPI.Controllers
             }
             catch (Exception)
             {
+                _logger.LogError($"Error while trying to пуе news page, min rate = {newsPageRequest.MinRate} " +
+                    $"page number = {newsPageRequest.PageNumber} page size = {newsPageRequest.PageSize}");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
